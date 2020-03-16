@@ -27,6 +27,17 @@ const ProgressBar = (props : any) => {
 
 let queueIndex = 0;
 
+const firebaseConfig = {
+  apiKey: "AIzaSyAAJ11KSyoF72gWXLxsR1dD3V_Udoj8jxc",
+  authDomain: "video-c34ea.firebaseapp.com",
+  databaseURL: "https://video-c34ea.firebaseio.com",
+  projectId: "video-c34ea",
+  storageBucket: "video-c34ea.appspot.com",
+  messagingSenderId: "216349406039",
+  appId: "1:216349406039:web:ec24a29f93432dde3dc412",
+  measurementId: "G-7BS6XD2MXQ"
+};
+
 const Index = (props : any) => {
   const fileStates= useState([]);
   const files = fileStates[0];
@@ -36,24 +47,12 @@ const Index = (props : any) => {
     return queueIndex++;
   }
   
-  const firebaseConfig = {
-    apiKey: "AIzaSyAAJ11KSyoF72gWXLxsR1dD3V_Udoj8jxc",
-    authDomain: "video-c34ea.firebaseapp.com",
-    databaseURL: "https://video-c34ea.firebaseio.com",
-    projectId: "video-c34ea",
-    storageBucket: "video-c34ea.appspot.com",
-    messagingSenderId: "216349406039",
-    appId: "1:216349406039:web:ec24a29f93432dde3dc412",
-    measurementId: "G-7BS6XD2MXQ"
-  };
-  
   if(!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
   }
 
   const storage = firebase.storage();
   const storageRef = storage.ref();
-  const waitUpload = true;
 
   const fileSelectedHandler = (event : any) => {
     console.log(event.target.files[0]);
@@ -141,6 +140,20 @@ const Index = (props : any) => {
 }
 
 const Show = () => {
+  if(!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+  }
+
+  const storageRef = firebase.storage().ref();
+
+  var listRef = storageRef.child('/');
+
+  listRef.listAll()
+    .then(res => {
+      console.log(res.items);
+    })
+ 
+
   return(
     <div className="App">
        <h2>Videos Uploaded</h2>
