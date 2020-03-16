@@ -86,7 +86,7 @@ const Index = (props : any) => {
 
     const promises : any = [];
     files.forEach((file : any) => {
-      if(file.progress < 100) {
+      if(file.progress === 0) {
         const uploadTask : any = storageRef.child(file.name).put(file);
         // console.log(uploadTask);
         promises.push(uploadTask);
