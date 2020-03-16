@@ -18,6 +18,7 @@ code {
   width: 350px;
   border-radius: 50px;
   border: 1px solid #333;
+  padding: 0;
 }
 
 .filler {
@@ -27,37 +28,32 @@ code {
   transition: width .2s ease-in;
 }
 
-.flex-container {
-  display: flex;
-  margin: 10px;
+.progress-container {
+  margin: 30px 0px;
 }
 
-.flex-container > .progress-bar {
-  margin: 0 10px 0 10px;
+.upload-percent{
+  padding: 0;
+  margin: 0;
+  display: inline;
 }
 
-.flex-container > .title {
-  text-align: left;
-  width: 400px;
+.upload-state {
+  padding: 0;
+  margin: 0;
+  display: inline;
 }
 
 li {
 list-style-type: none;
 }
 
-.upload-state {
-  margin-left: 20px;
+.video {
+  max-width: 100%;
+  height: auto;
 }
-
-.upload-percent {
-  width: 50px;
-}
-
-.input-box {
-  margin: 30px;
-}
-
+/* 
 .progress-bars {
   display: block;
   margin: 80px 0 0 200px;
-}
+} */

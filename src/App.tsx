@@ -16,11 +16,11 @@ const Filler = (props:any) => {
 
 const ProgressBar = (props : any) => {
   return(
-    <div className="flex-container" id={props.id}>
-      <div className="title">{props.filename}</div>
-      <div className="progress-bar"><Filler percentage={props.percentage}/></div>
-      <div className="upload-percent">{props.percentage}%</div>
-      {props.percentage === 100 ? <div className="upload-state">Success</div> : (props.percentage === 0 ? <div className="upload-state">Waiting</div> : <div className="upload-state">Uploading</div>)}
+    <div className="row progress-container" id={props.id}>
+      <div className="col-sm-12 col-md-12 col-lg-5">{props.filename}</div>
+      <div className="col-sm-12 col-md-7 col-lg-4 progress-bar"><Filler percentage={props.percentage}/></div>
+      <div className="col-sm-6 col-md-2 col-lg-1 upload-percent">{props.percentage}%</div>
+      {props.percentage === 100 ? <div className="col-sm-6 col-md-3 col-lg-1 upload-state">Success</div> : (props.percentage === 0 ? <div className="col-sm-6 col-md-3 col-lg-1 upload-state">Waiting</div> : <div className="col-sm-6 col-md-3 col-lg-1 upload-state">Uploading</div>)}
     </div>
   )
 };
@@ -130,9 +130,7 @@ const Index = (props : any) => {
           <input type="file" onChange={fileSelectedHandler} multiple></input>
           <button onClick={fileUploadHandler}>Upload</button>
         </div>
-        
-        {/*files[0] ? <ProgressBar percentage={files[0]["progress"]} filename={files[0]["name"]}/> : <div></div>8*/}
-        {/* {this.state.percent === 100 ? <div>Uploading...</div> : <div>Uploaded</div>} */}
+
         <div className="progress-bars">{genProgressBars()}</div>
       </div>
   );
@@ -142,6 +140,9 @@ const Index = (props : any) => {
 
 
 const Show = () => {
+  const onVideoScroll = (event : any) => {
+    console.log(event);
+  }
   
   const s = useState({
     error: null,
@@ -160,7 +161,7 @@ const Show = () => {
   var listRef = storageRef.child('/');
 
   // get all the download links of the videos from Firebase
-
+  // and generate video snippets with the links
   listRef.listAll()
   .then(res => {
     let promises : any = [];
@@ -178,9 +179,11 @@ const Show = () => {
         links.forEach((link : any) => {
           snippets.push(
             <li key={link}>
-              <video width="1080" height="720" autoPlay>
-                <source type="video/mp4" src={link}/>
-              </video>
+              <div className="video">
+                <video width="480" height="320" autoPlay controls>
+                  <source type="video/mp4" src={link}/>
+                </video>
+              </div>
             </li>
           )
         })
@@ -202,7 +205,7 @@ const Show = () => {
       <div className="App">
          <h2>Videos Uploaded</h2>
          <Link to={`/`}>Upload More</Link>
-         <div>{state.snippets}</div>
+         <div className="row">{state.snippets}</div>
       </div>
     )
   }
