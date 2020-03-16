@@ -122,11 +122,10 @@ const Index = (props : any) => {
 
   }
 
-
   return (
       <div className="App">
         <h2>Please choose the video files to upload.</h2>
-        <Link to={`show`}>videos uploaded</Link>
+        <Link to={`show`}>Videos Uploaded</Link>
         <div className="input-box">
           <input type="file" onChange={fileSelectedHandler} multiple></input>
           <button onClick={fileUploadHandler}>Upload</button>
@@ -139,7 +138,20 @@ const Index = (props : any) => {
   );
 }
 
+
+
+
 const Show = () => {
+  
+  const s = useState({
+    error: null,
+    isLoaded: false,
+    items: []
+  });
+  const state : any = s[0];
+  const setState : any = s[1];
+
+
   if(!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
   }
@@ -148,25 +160,52 @@ const Show = () => {
 
   var listRef = storageRef.child('/');
 
+  // get all the download links of the videos from Firebase
   listRef.listAll()
-    .then(res => {
-      // console.log(res.items);
-      res.items.forEach((itemRef : any) => {
-        console.log(itemRef);
-      });
+  .then(res => {
+    let snippets : any = [];
+    res.items.forEach((itemRef : any) => {
+      itemRef.getDownloadURL()
+        .then((link : any) => {
+          // console.log(link);
+          snippets.push(
+              <li key={link}>
+                <video width="960" height="640" autoPlay>
+                  <source src={link} type="video/mp4" />
+                </video>
+              </li>
+          )
+          return snippets;
+        })
+        .then((snippets : any) => {
+          setState({
+            isLoaded: true,
+            items: snippets
+          })
+        })
     })
- 
+  })
+  .catch((error) => {
+    setState({
+      error: error
+    })
+  });
 
-  return(
-    <div className="App">
-       <h2>Videos Uploaded</h2>
-       <div>
-         <video width="320" height="240" controls>
-           <source type="video/mp4" src="https://firebasestorage.googleapis.com/v0/b/video-c34ea.appspot.com/o/Screen%20Recording%202020-03-16%20at%203.13.30%20PM.mov?alt=media&token=91967cd0-6e00-4e79-ae2a-013dea4847aa"></source>
-         </video>
-       </div>
-    </div>
-  )
+  if(state.error) {
+    return (
+    <div>Error: {state.error.message}</div>
+    )
+  } else if (!state.isLoaded) {
+    return (<div>Loading...</div>);
+  } else {
+    return(
+      <div className="App">
+         <h2>Videos Uploaded</h2>
+         <Link to={`/`}>Upload More</Link>
+         <div>{state.items}</div>
+      </div>
+    )
+  }
 }
 
 const PageNotFound = () => {
