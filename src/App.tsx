@@ -121,11 +121,15 @@ const App = (props : any) => {
 
   return (
     <div className="App">
-    <input type="file" onChange={fileSelectedHandler} multiple></input>
-    <button onClick={fileUploadHandler}>Upload</button>
-    {/*files[0] ? <ProgressBar percentage={files[0]["progress"]} filename={files[0]["name"]}/> : <div></div>8*/}
-    {/* {this.state.percent === 100 ? <div>Uploading...</div> : <div>Uploaded</div>} */}
-    {genProgressBars()}
+      <h2>Please choose the video files to upload.</h2>
+      <div className="input-box">
+        <input type="file" onChange={fileSelectedHandler} multiple></input>
+        <button onClick={fileUploadHandler}>Upload</button>
+      </div>
+      
+      {/*files[0] ? <ProgressBar percentage={files[0]["progress"]} filename={files[0]["name"]}/> : <div></div>8*/}
+      {/* {this.state.percent === 100 ? <div>Uploading...</div> : <div>Uploaded</div>} */}
+      {genProgressBars()}
     </div>
   );
 

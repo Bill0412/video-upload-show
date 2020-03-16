@@ -52,3 +52,7 @@ list-style-type: none;
 .upload-percent {
   width: 50px;
 }
+
+.input-box {
+  margin: 30px;
+}
