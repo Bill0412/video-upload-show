@@ -146,11 +146,10 @@ const Show = () => {
   const s = useState({
     error: null,
     isLoaded: false,
-    items: []
+    snippets: []
   });
   const state : any = s[0];
   const setState : any = s[1];
-
 
   if(!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
@@ -161,35 +160,36 @@ const Show = () => {
   var listRef = storageRef.child('/');
 
   // get all the download links of the videos from Firebase
+
   listRef.listAll()
   .then(res => {
-    let snippets : any = [];
+    let promises : any = [];
     res.items.forEach((itemRef : any) => {
-      itemRef.getDownloadURL()
-        .then((link : any) => {
-          // console.log(link);
-          snippets.push(
-              <li key={link}>
-                <video width="960" height="640" autoPlay>
-                  <source src={link} type="video/mp4" />
-                </video>
-              </li>
-          )
-          return snippets;
-        })
-        .then((snippets : any) => {
-          setState({
-            isLoaded: true,
-            items: snippets
-          })
-        })
+      // console.log(itemRef);
+      const promise = itemRef.getDownloadURL();
+      promises.push(promise);
     })
+    return promises;
   })
-  .catch((error) => {
-    setState({
-      error: error
-    })
-  });
+  .then((promises : any) => {
+    Promise.all(promises)
+      .then((links : any) => {
+        let snippets : any = [];
+        links.forEach((link : any) => {
+          snippets.push(
+            <li key={link}>
+              <video width="1080" height="720" autoPlay>
+                <source type="video/mp4" src={link}/>
+              </video>
+            </li>
+          )
+        })
+        setState({
+          isLoaded: true,
+          snippets: snippets
+        })
+      })
+  })
 
   if(state.error) {
     return (
@@ -202,7 +202,7 @@ const Show = () => {
       <div className="App">
          <h2>Videos Uploaded</h2>
          <Link to={`/`}>Upload More</Link>
-         <div>{state.items}</div>
+         <div>{state.snippets}</div>
       </div>
     )
   }
