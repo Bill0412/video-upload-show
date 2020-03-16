@@ -1,6 +1,14 @@
 import React, { useState } from 'react';
 import './App.css';
 import * as firebase from 'firebase';
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Link,
+  useRouteMatch,
+  useParams
+} from "react-router-dom";
 
 const Filler = (props:any) => {
   return <div className="filler" style={{width: `${props.percentage}%`}}/>
@@ -19,7 +27,7 @@ const ProgressBar = (props : any) => {
 
 let queueIndex = 0;
 
-const App = (props : any) => {
+const Index = (props : any) => {
   const fileStates= useState([]);
   const files = fileStates[0];
   const setFiles : any = fileStates[1];
@@ -82,7 +90,6 @@ const App = (props : any) => {
       if(file.progress < 100) {
         const uploadTask : any = storageRef.child(file.name).put(file);
         // console.log(uploadTask);
-        // const generation : any = uploadTask.metadata_.generation;
         promises.push(uploadTask);
         uploadTask.on(
           firebase.storage.TaskEvent.STATE_CHANGED,
@@ -100,10 +107,8 @@ const App = (props : any) => {
                 prevFiles.find((item : any) => item.id === fileId).progress = progress;
                 return [...prevFiles];
               })
-            }
-              
-            
-            console.log(files);
+            }        
+            // console.log(files);
           },
           (error : any) => console.log(error.code),
         )
@@ -120,21 +125,44 @@ const App = (props : any) => {
 
 
   return (
-    <div className="App">
-      <h2>Please choose the video files to upload.</h2>
-      <div className="input-box">
-        <input type="file" onChange={fileSelectedHandler} multiple></input>
-        <button onClick={fileUploadHandler}>Upload</button>
+      <div className="App">
+        <h2>Please choose the video files to upload.</h2>
+        <Link to={`show`}>videos uploaded</Link>
+        <div className="input-box">
+          <input type="file" onChange={fileSelectedHandler} multiple></input>
+          <button onClick={fileUploadHandler}>Upload</button>
+        </div>
+        
+        {/*files[0] ? <ProgressBar percentage={files[0]["progress"]} filename={files[0]["name"]}/> : <div></div>8*/}
+        {/* {this.state.percent === 100 ? <div>Uploading...</div> : <div>Uploaded</div>} */}
+        <div className="progress-bars">{genProgressBars()}</div>
       </div>
-      
-      {/*files[0] ? <ProgressBar percentage={files[0]["progress"]} filename={files[0]["name"]}/> : <div></div>8*/}
-      {/* {this.state.percent === 100 ? <div>Uploading...</div> : <div>Uploaded</div>} */}
-      {genProgressBars()}
-    </div>
   );
-
-
-
 }
 
+const Show = () => {
+  return(
+    <div className="App">
+       <h2>Videos Uploaded</h2>
+    </div>
+  )
+}
+
+const PageNotFound = () => {
+  return(
+    <h2>Page not Found!</h2>
+  )
+}
+
+const App = () => {
+  return(
+    <Router>
+      <Switch>
+        <Route exact path="/show" component={Show} />
+        <Route exact path="/" component={Index}/>
+        <Route component={PageNotFound}/>
+      </Switch>
+    </Router>
+  )
+}
 export default App;

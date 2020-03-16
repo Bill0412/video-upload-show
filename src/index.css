@@ -56,3 +56,8 @@ list-style-type: none;
 .input-box {
   margin: 30px;
 }
+
+.progress-bars {
+  display: block;
+  margin: 80px 0 0 200px;
+}
