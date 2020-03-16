@@ -150,13 +150,21 @@ const Show = () => {
 
   listRef.listAll()
     .then(res => {
-      console.log(res.items);
+      // console.log(res.items);
+      res.items.forEach((itemRef : any) => {
+        console.log(itemRef);
+      });
     })
  
 
   return(
     <div className="App">
        <h2>Videos Uploaded</h2>
+       <div>
+         <video width="320" height="240" controls>
+           <source type="video/mp4" src="https://firebasestorage.googleapis.com/v0/b/video-c34ea.appspot.com/o/Screen%20Recording%202020-03-16%20at%203.13.30%20PM.mov?alt=media&token=91967cd0-6e00-4e79-ae2a-013dea4847aa"></source>
+         </video>
+       </div>
     </div>
   )
 }
