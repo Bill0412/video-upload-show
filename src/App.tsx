@@ -1,9 +1,20 @@
 import React, { Component } from 'react';
 import './App.css';
 import * as firebase from 'firebase';
-const os = require('os');
-const fs = require('fs');
-const path = require('path');
+
+const Filler = (props:any) => {
+  return <div className="filler" style={{width: `${props.percentage}%`}}/>
+}
+
+const ProgressBar = (props:any) => {
+  return(
+    <div className="flex-container">
+      <div className="title">{props.filename}</div>
+      <div className="progress-bar"><Filler percentage={props.percentage}/></div>
+      <div>{props.percentage}%</div>
+    </div>
+  )
+};
 
 const firebaseConfig = {
   apiKey: "AIzaSyAAJ11KSyoF72gWXLxsR1dD3V_Udoj8jxc",
@@ -23,14 +34,18 @@ const storage = firebase.storage();
 class App extends Component{
 
   state:any = {
-    selectedFile: null
+    selectedFile: null,
+    percent: 0
   }
   storageRef = storage.ref();
 
   fileSelectedHandler = (event: any) => {
     console.log(event.target.files[0]);
     this.setState({
-      selectedFile: event.target.files[0]
+      
+      selectedFile: event.target.files[0],
+      percent: 0
+      //uploadingFiles: prevState.uploadingFiles
     })
   }
 
@@ -38,16 +53,32 @@ class App extends Component{
     // const filepath = path.join(os.tmpdir(), filename);
     let videoRef = this.storageRef.child(this.state.selectedFile.name);
     videoRef.put(this.state.selectedFile)
-      .then((snapshot:any) => {
-        console.log('Uploaded a blob or file!');
-      })
+      .on(
+        'state_changed', 
+        (data) => {
+          let now = (data.bytesTransferred / data.totalBytes) * 100;
+          now = Number(now.toFixed(2));
+          this.setState((prevState) => ({
+            percent: now
+          }));
+        },
+        (err) => {
+          console.log('error');
+          console.log(err);
+        },
+        () => {
+          console.log('Uploaded a blob!');
+        }
+      );
   }
+
 
   render() {
     return (
       <div className="App">
       <input type="file" onChange={this.fileSelectedHandler}></input>
       <button onClick={this.fileUploadHandler}>Upload</button>
+      {this.state.selectedFile ? <ProgressBar percentage={this.state.percent} filename={this.state.selectedFile.name}/> : <div></div>}
       </div>
     );
   }
