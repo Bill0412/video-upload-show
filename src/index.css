@@ -37,5 +37,10 @@ code {
 }
 
 .flex-container > .title {
-  width: 300px;
+  text-align: left;
+  width: 400px;
+}
+
+li {
+list-style-type: none;
 }

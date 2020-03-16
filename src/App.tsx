@@ -2,10 +2,30 @@ import React, { useState } from 'react';
 import './App.css';
 import * as firebase from 'firebase';
 
+const Filler = (props:any) => {
+  return <div className="filler" style={{width: `${props.percentage}%`}}/>
+}
+
+const ProgressBar = (props : any) => {
+  return(
+    <div className="flex-container" id={props.id}>
+      <div className="title">{props.filename}</div>
+      <div className="progress-bar"><Filler percentage={props.percentage}/></div>
+      <div>{props.percentage}%</div>
+    </div>
+  )
+};
+
+let queueIndex = 0;
+
 const App = (props : any) => {
   const fileStates= useState([]);
   const files = fileStates[0];
   const setFiles : any = fileStates[1];
+
+  const nextQueueIndex = () => {
+    return queueIndex++;
+  }
   
   const firebaseConfig = {
     apiKey: "AIzaSyAAJ11KSyoF72gWXLxsR1dD3V_Udoj8jxc",
@@ -25,57 +45,85 @@ const App = (props : any) => {
   const storage = firebase.storage();
   const storageRef = storage.ref();
 
-  const fileSelectedHandler = (event: any) => {
+  const fileSelectedHandler = (event : any) => {
     console.log(event.target.files[0]);
     
     for(let i = 0; i < event.target.files.length; i++) {
       const newFile : any = event.target.files[i];
-      newFile["id"] = Math.random();
+      newFile["id"] = nextQueueIndex();
+      newFile["progress"] = 0;
+      console.log(newFile);
       setFiles((prevFiles : any) => [...prevFiles, newFile]);
     }
   }
 
-  const fileUploadHandler = (event:any) => {
-    event.preventDefault();   // prevent page refreshing
-    const promises = [];
-    files.forEach((file:any) => {
-      const uploadTask:any = storageRef.child(file.name).put(file);
-      promises.push(uploadTask);
-      uploadTask.on(
-        firebase.storage.TaskEvent.STATE_CHANGED,
-        (snapshot:any) => {
-          let progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          progress = Number(progress.toFixed(2));
-          console.log(`progress: ${progress}%`);
-          console.log(snapshot)
-        },
-        (error : any) => console.log(error.code),
+  const genProgressBars = () => {
+    let bars : any = [];
+    
+    files.forEach((file : any) => {
+      bars.push(
+        <li key={file.id}>
+          <ProgressBar id={file.id} percentage={file.progress} filename={file.name}/>
+        </li>
       )
-    })
+    });
+
+    return bars;
   }
 
-  const Filler = (props:any) => {
-    return <div className="filler" style={{width: `${props.percentage}%`}}/>
-  }
-  
-  const ProgressBar = (props:any) => {
-    return(
-      <div className="flex-container">
-        <div className="title">{props.filename}</div>
-        <div className="progress-bar"><Filler percentage={props.percentage}/></div>
-        <div>{props.percentage}%</div>
-      </div>
-    )
-  };
+  const fileUploadHandler = (event : any) => {
 
+    //event.preventDefault();   // prevent page refreshing
+
+    const promises : any = [];
+    files.forEach((file : any) => {
+      if(file.progress < 100) {
+        const uploadTask : any = storageRef.child(file.name).put(file);
+        // console.log(uploadTask);
+        // const generation : any = uploadTask.metadata_.generation;
+        promises.push(uploadTask);
+        uploadTask.on(
+          firebase.storage.TaskEvent.STATE_CHANGED,
+          (snapshot:any) => {
+            // calculate the progress
+            let progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            progress = Number(progress.toFixed(2));
+
+            // get file id
+            let fileId = snapshot.task.blob_.data_.id;
+
+            // update the progress
+            if(snapshot.state === firebase.storage.TaskState.RUNNING) {
+              setFiles((prevFiles : any) => {
+                prevFiles.find((item : any) => item.id === fileId).progress = progress;
+                return [...prevFiles];
+              })
+            }
+              
+            
+            console.log(files);
+          },
+          (error : any) => console.log(error.code),
+        )
+      }
+    });
+    console.log(promises);
+    Promise.all(promises)
+      .then(() => {
+        console.log("All files uploaded")
+      })
+      .catch(err => console.log(err.code));
+
+  }
 
 
   return (
     <div className="App">
     <input type="file" onChange={fileSelectedHandler} multiple></input>
     <button onClick={fileUploadHandler}>Upload</button>
-    {/*this.state.selectedFile ? <ProgressBar percentage={this.state.percent} filename={this.state.selectedFile.name}/> : <div></div>*/}
+    {/*files[0] ? <ProgressBar percentage={files[0]["progress"]} filename={files[0]["name"]}/> : <div></div>8*/}
     {/* {this.state.percent === 100 ? <div>Uploading...</div> : <div>Uploaded</div>} */}
+    {genProgressBars()}
     </div>
   );
 
