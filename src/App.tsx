@@ -11,7 +11,8 @@ const ProgressBar = (props : any) => {
     <div className="flex-container" id={props.id}>
       <div className="title">{props.filename}</div>
       <div className="progress-bar"><Filler percentage={props.percentage}/></div>
-      <div>{props.percentage}%</div>
+      <div className="upload-percent">{props.percentage}%</div>
+      {props.percentage === 100 ? <div className="upload-state">Success</div> : (props.percentage === 0 ? <div className="upload-state">Waiting</div> : <div className="upload-state">Uploading</div>)}
     </div>
   )
 };
@@ -44,6 +45,7 @@ const App = (props : any) => {
 
   const storage = firebase.storage();
   const storageRef = storage.ref();
+  const waitUpload = true;
 
   const fileSelectedHandler = (event : any) => {
     console.log(event.target.files[0]);

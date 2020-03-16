@@ -44,3 +44,11 @@ code {
 li {
 list-style-type: none;
 }
+
+.upload-state {
+  margin-left: 20px;
+}
+
+.upload-percent {
+  width: 50px;
+}
