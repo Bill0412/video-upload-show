@@ -30,6 +30,7 @@ code {
 
 .progress-container {
   margin: 30px 0px;
+  align-self: center;
 }
 
 .upload-percent{
