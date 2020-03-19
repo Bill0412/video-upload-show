@@ -1,4 +1,16 @@
+# Video Upload & Show
+
+You can view the published version of this app at <https://video-c34ea.firebaseapp.com/>.
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+
+## Publish Process
+
+With firebase connected, the app can be easily pushlished with
+
+`npm run build`
+`firebase deploy`
+
 
 ## Available Scripts
 
