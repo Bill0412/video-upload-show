@@ -8,7 +8,7 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 With firebase connected, the app can be easily pushlished with
 
-`npm run build`
+`npm run build`<br>
 `firebase deploy`
 
 
